@@ -38,17 +38,14 @@
   </style>
 </head>
 <body>
-  <!-- คำแนะนำบนหน้าจอ -->
   <div id="ar-instruction">📷 ส่องกล้องไปที่ Marker เพื่อดูโมเดล 3D</div>
 
-  <!-- A-Frame AR Scene -->
   <a-scene
     embedded
     arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
     renderer="logarithmicDepthBuffer: true; colorManagement: true;"
     vr-mode-ui="enabled: false">
 
-    <!-- กำหนด Asset ล่วงหน้าเพื่อประสิทธิภาพการโหลด -->
     <a-assets>
       <a-asset-item 
         id="epona-model" 
@@ -57,7 +54,6 @@
       </a-asset-item>
     </a-assets>
 
-    <!-- Custom Pattern Marker ที่เจนเนอเรตจาก tracker.png -->
     <a-marker 
       type="pattern" 
       url="https://aitutorialcourse.github.io/tracker.patt"
@@ -66,7 +62,6 @@
       smoothTolerance="0.01"
       smoothThreshold="5">
       
-      <!-- โมเดล 3D พร้อมสั่งเล่น Animation แบบวนลูปซ้ำ -->
       <a-entity
         id="epona-entity"
         gltf-model="#epona-model"
@@ -76,12 +71,10 @@
         animation-mixer="clip: *; loop: repeat; crossFadeDuration: 0.4;">
       </a-entity>
 
-      <!-- ไฟส่องสว่างโมเดล -->
       <a-light type="ambient" color="#ffffff" intensity="1.2"></a-light>
       <a-light type="directional" color="#ffffff" intensity="0.8" position="2 4 3"></a-light>
     </a-marker>
 
-    <!-- กล้อง AR -->
     <a-entity camera></a-entity>
   </a-scene>
 </body>
