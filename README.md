@@ -1,45 +1,58 @@
-# TeerTT.github.io<!DOCTYPE html>
+# TeerTT.github.io
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CASE FILE: Thanesuan Noikong (Teer) | 3D Portfolio</title>
-  
-  <!-- Fonts: Google Fonts (Special Elite & Sarabun) -->
+  <title>Thanesuan Noikong (Teer) | 3D Portfolio & Voxel Studio</title>
+
+  <!-- Google Fonts: Special Elite & Sarabun -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&family=Special+Elite&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&family=Special+Elite&family=VT323&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg-color: #07090d;
-      --paper-color: #12161f;
-      --paper-border: #2c3342;
-      --accent-gold: #e5a93c;
-      --accent-red: #c93b3b;
-      --text-main: #d1d7e0;
-      --text-dim: #828c9e;
-      --font-detective: 'Special Elite', monospace;
-      --font-body: 'Sarabun', sans-serif;
+      --cork-base: #865935;
+      --cork-dark: #4d2f17;
+      --paper-cream: #f4ebd0;
+      --tape-color: rgba(235, 218, 166, 0.65);
+      --string-red: #c92a2a;
+      --pin-gold: #f59f00;
+      --panel-bg: rgba(18, 22, 28, 0.88);
+      --border-dark: #2f3846;
+      --font-dossier: 'Special Elite', monospace;
+      --font-thai: 'Sarabun', sans-serif;
+      --font-crt: 'VT323', monospace;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      cursor: crosshair;
+      user-select: none;
     }
 
     body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      font-family: var(--font-body);
-      overflow-x: hidden;
-      min-height: 100vh;
+      background-color: #1a110b;
+      color: #e2e8f0;
+      font-family: var(--font-thai);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
       position: relative;
     }
 
-    /* Flashlight Vignette overlay following cursor */
+    /* 1. Detective Corkboard Background */
+    #corkboard-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+    }
+
+    /* Flashlight Overlay */
     #flashlight-overlay {
       position: fixed;
       top: 0;
@@ -49,16 +62,15 @@
       pointer-events: none;
       z-index: 2;
       background: radial-gradient(
-        circle 320px at var(--mouse-x, 50%) var(--mouse-y, 50%),
-        rgba(255, 235, 190, 0.08) 0%,
-        rgba(10, 14, 22, 0.65) 45%,
-        rgba(4, 6, 10, 0.94) 85%
+        circle 380px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(255, 235, 180, 0.08) 0%,
+        rgba(10, 7, 4, 0.6) 45%,
+        rgba(5, 3, 2, 0.92) 85%
       );
-      mix-blend-mode: screen;
-      transition: opacity 0.2s ease;
+      mix-blend-mode: multiply;
     }
 
-    /* 3D WebGL Canvas */
+    /* 2. 3D WebGL Canvas for Voxel Painter */
     #webgl-canvas {
       position: fixed;
       top: 0;
@@ -68,240 +80,353 @@
       z-index: 1;
     }
 
-    /* Control Panel (ด้านขวาบน) */
-    .control-panel {
+    /* 3. Center Detective Headline */
+    .center-title-container {
       position: fixed;
-      top: 24px;
-      right: 24px;
-      z-index: 10;
-      background: rgba(14, 18, 25, 0.88);
-      border: 1px solid var(--paper-border);
-      border-left: 4px solid var(--accent-gold);
-      backdrop-filter: blur(10px);
-      padding: 18px 22px;
-      border-radius: 8px;
-      width: 290px;
-      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.8);
-      font-family: var(--font-detective);
+      top: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 4;
+      text-align: center;
+      pointer-events: none;
+      background: rgba(18, 14, 10, 0.75);
+      border: 2px dashed rgba(229, 169, 60, 0.6);
+      padding: 14px 28px;
+      border-radius: 4px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
     }
 
-    .control-panel h3 {
-      font-size: 1rem;
-      color: var(--accent-gold);
-      margin-bottom: 14px;
+    .main-name {
+      font-family: var(--font-dossier);
+      font-size: clamp(1.8rem, 3.8vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #f8fafc;
+      text-transform: uppercase;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    }
+
+    .sub-dossier {
+      font-size: 0.95rem;
+      color: #eab308;
+      font-family: var(--font-thai);
+      font-weight: 400;
+      margin-top: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    /* 4. Left Profile Dossier Card */
+    .profile-card {
+      position: fixed;
+      top: 140px;
+      left: 24px;
+      z-index: 5;
+      width: 320px;
+      background: var(--panel-bg);
+      border: 1px solid var(--border-dark);
+      border-left: 4px solid #c92a2a;
+      backdrop-filter: blur(8px);
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.75);
+    }
+
+    .card-stamp {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      color: #c92a2a;
+      border: 2px solid #c92a2a;
+      padding: 2px 6px;
+      font-family: var(--font-dossier);
+      font-size: 0.75rem;
+      transform: rotate(6deg);
+      letter-spacing: 1px;
+    }
+
+    .profile-title {
+      font-family: var(--font-dossier);
+      color: #f59f00;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    .profile-detail {
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: #cbd5e1;
+    }
+
+    .profile-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .badge-pill {
+      background: rgba(245, 159, 0, 0.15);
+      border: 1px solid rgba(245, 159, 0, 0.4);
+      color: #fde047;
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 3px;
+    }
+
+    .instructions-box {
+      margin-top: 14px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px dashed #475569;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    .instructions-box strong {
+      color: #e2e8f0;
+    }
+
+    /* 5. Right Control Panel (Lighting & Rotation) */
+    .control-panel {
+      position: fixed;
+      top: 140px;
+      right: 24px;
+      z-index: 5;
+      width: 290px;
+      background: var(--panel-bg);
+      border: 1px solid var(--border-dark);
+      border-left: 4px solid #f59f00;
+      backdrop-filter: blur(8px);
+      padding: 18px 20px;
+      border-radius: 6px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.75);
+      font-family: var(--font-dossier);
+    }
+
+    .panel-header {
+      color: #f59f00;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
       letter-spacing: 1px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .control-group {
-      margin-bottom: 12px;
+    .ctrl-item {
+      margin-bottom: 10px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
 
-    .control-group label {
-      font-size: 0.8rem;
-      color: var(--text-dim);
+    .ctrl-item label {
+      font-size: 0.78rem;
+      color: #94a3b8;
       display: flex;
       justify-content: space-between;
     }
 
-    .control-group input[type="range"] {
+    .ctrl-item input[type="range"] {
       -webkit-appearance: none;
       width: 100%;
-      height: 5px;
-      background: #252c3a;
-      border-radius: 3px;
+      height: 4px;
+      background: #334155;
+      border-radius: 2px;
       outline: none;
     }
 
-    .control-group input[type="range"]::-webkit-slider-thumb {
+    .ctrl-item input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 15px;
-      height: 15px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
-      background: var(--accent-gold);
+      background: #f59f00;
       cursor: pointer;
-      box-shadow: 0 0 8px var(--accent-gold);
+      box-shadow: 0 0 6px #f59f00;
     }
 
-    .toggle-row {
+    .color-picker-row {
       display: flex;
-      justify-content: space-between;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px dashed var(--paper-border);
+      gap: 6px;
+      margin-top: 10px;
+      align-items: center;
     }
 
-    .btn-toggle {
-      background: rgba(229, 169, 60, 0.12);
-      border: 1px solid var(--accent-gold);
-      color: var(--accent-gold);
-      padding: 5px 10px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-family: var(--font-detective);
+    .color-swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
       cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.15s;
+    }
+
+    .color-swatch.active {
+      border-color: #fff;
+      transform: scale(1.15);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-dark);
+    }
+
+    .btn-action {
+      flex: 1;
+      background: rgba(245, 159, 0, 0.12);
+      border: 1px solid #f59f00;
+      color: #f59f00;
+      padding: 6px;
+      font-size: 0.72rem;
+      font-family: var(--font-dossier);
+      cursor: pointer;
+      border-radius: 3px;
+      text-align: center;
       transition: all 0.2s;
     }
 
-    .btn-toggle:hover, .btn-toggle.active {
-      background: var(--accent-gold);
+    .btn-action:hover, .btn-action.active {
+      background: #f59f00;
       color: #000;
     }
 
-    /* Main Content Dossier / Case File */
-    .content-wrapper {
-      position: relative;
+    /* 6. Bottom Right Retro CRT TV */
+    .tv-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
       z-index: 5;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 60px 24px 100px;
-      pointer-events: none; /* ให้คลิกทะลุไปหมุนโมเดลได้ เว้นแต่ส่วนที่มีคลาส .clickable */
+      width: 320px;
+      background: #251e18;
+      border: 4px solid #140f0c;
+      border-radius: 12px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.9);
+      padding: 12px 14px;
     }
 
-    .case-card {
-      pointer-events: auto;
-      background: rgba(18, 22, 31, 0.78);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(8px);
-      border-radius: 6px;
-      padding: 36px;
-      margin-bottom: 28px;
+    .tv-casing {
+      display: flex;
+      gap: 12px;
+    }
+
+    .tv-screen-wrapper {
+      flex: 1;
+      height: 180px;
+      background: #090e0c;
+      border-radius: 18px / 12px;
+      border: 3px solid #101512;
       position: relative;
-      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+      overflow: hidden;
+      box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.95);
     }
 
-    .classified-stamp {
+    /* CRT scanlines effect */
+    .tv-screen-wrapper::after {
+      content: "";
       position: absolute;
-      top: 20px;
-      right: 25px;
-      font-family: var(--font-detective);
-      color: var(--accent-red);
-      font-size: 1.1rem;
-      border: 2px solid var(--accent-red);
-      padding: 4px 10px;
-      letter-spacing: 2px;
-      transform: rotate(6deg);
-      user-select: none;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%),
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+      background-size: 100% 3px, 4px 100%;
+      pointer-events: none;
+      z-index: 3;
     }
 
-    .case-header {
-      font-family: var(--font-detective);
-      font-size: 0.95rem;
-      color: var(--accent-gold);
-      margin-bottom: 8px;
-      letter-spacing: 2px;
-    }
-
-    .agent-name {
-      font-family: var(--font-detective);
-      font-size: clamp(2rem, 4vw, 3rem);
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 6px;
-      letter-spacing: 1px;
-    }
-
-    .role-badge-list {
+    .tv-content-frame {
+      width: 100%;
+      height: 100%;
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 20px;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10px;
+      color: #4ade80;
+      font-family: var(--font-crt);
+      text-shadow: 0 0 5px rgba(74, 222, 128, 0.6);
+      position: relative;
+      z-index: 2;
     }
 
-    .role-badge {
-      background: rgba(229, 169, 60, 0.12);
-      border: 1px solid rgba(229, 169, 60, 0.4);
-      color: #f7d28b;
-      padding: 4px 12px;
-      font-size: 0.85rem;
-      font-family: var(--font-detective);
-      border-radius: 3px;
-    }
-
-    .detective-note {
-      font-size: 1.05rem;
-      line-height: 1.8;
-      color: #b8c0cc;
-      border-left: 3px solid var(--paper-border);
-      padding-left: 16px;
-      margin-bottom: 20px;
-    }
-
-    /* Grid Displays */
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-top: 20px;
-      font-size: 0.9rem;
-    }
-
-    .info-item {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--paper-border);
-      padding: 14px;
-      border-radius: 4px;
-    }
-
-    .info-item strong {
-      display: block;
-      color: var(--accent-gold);
-      font-family: var(--font-detective);
-      font-size: 0.8rem;
-      margin-bottom: 4px;
-      letter-spacing: 1px;
-    }
-
-    .evidence-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 16px;
-      margin-top: 14px;
-    }
-
-    .evidence-card {
-      background: rgba(10, 14, 20, 0.7);
-      border: 1px solid #1f2735;
-      padding: 16px;
-      border-radius: 4px;
-      transition: all 0.25s ease;
-    }
-
-    .evidence-card:hover {
-      border-color: var(--accent-gold);
-      transform: translateY(-2px);
-    }
-
-    .evidence-card h4 {
-      font-family: var(--font-detective);
-      color: #f3f4f6;
-      margin-bottom: 6px;
+    .tv-badge-header {
       font-size: 1rem;
-    }
-
-    .evidence-card p {
-      font-size: 0.88rem;
-      color: #9aa4b2;
-      line-height: 1.5;
-    }
-
-    .hint-bar {
-      font-family: var(--font-detective);
-      font-size: 0.8rem;
-      color: #717d91;
-      margin-top: 14px;
       display: flex;
+      justify-content: space-between;
+      letter-spacing: 1px;
+    }
+
+    .tv-project-name {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #86efac;
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    .tv-desc {
+      font-size: 0.95rem;
+      line-height: 1.25;
+      color: #bbf7d0;
+      margin-top: 4px;
+      font-family: var(--font-thai);
+    }
+
+    .tv-meta {
+      font-size: 0.85rem;
+      color: #22c55e;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .tv-knobs {
+      width: 45px;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 6px;
+      justify-content: space-around;
+    }
+
+    .tv-dial {
+      width: 32px;
+      height: 32px;
+      background: #181310;
+      border: 2px solid #4a382c;
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.2s;
+    }
+
+    .tv-dial::before {
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 3px;
+      height: 8px;
+      background: #f59f00;
+      border-radius: 2px;
+    }
+
+    .tv-dial:active {
+      transform: rotate(45deg);
+    }
+
+    .tv-label {
+      font-size: 0.6rem;
+      font-family: var(--font-dossier);
+      color: #a88871;
+      text-align: center;
     }
   </style>
 
-  <!-- Import maps for Three.js -->
+  <!-- Polyfill & Three.js Import map -->
   <script type="importmap">
     {
       "imports": {
@@ -312,126 +437,267 @@
 </head>
 <body>
 
-  <!-- Flashlight beam overlay -->
+  <!-- Corkboard 2D Canvas Background -->
+  <canvas id="corkboard-canvas"></canvas>
+
+  <!-- Flashlight Vignette Overlay -->
   <div id="flashlight-overlay"></div>
 
-  <!-- WebGL Render Canvas -->
+  <!-- Three.js Interactive 3D Voxel Studio Canvas -->
   <canvas id="webgl-canvas"></canvas>
 
-  <!-- Detective Investigation Control Panel -->
+  <!-- Center Headline Title -->
+  <div class="center-title-container">
+    <div class="main-name">Thanesuan Noikong</div>
+    <div class="sub-dossier">Teer • นักศึกษาชั้นปีที่ 4 คณะสถาปัตย์เทคโนโลยี สาขาเกมและอนิเมชั่น</div>
+  </div>
+
+  <!-- Left: Dossier Bio & Instructions Card -->
+  <div class="profile-card">
+    <div class="card-stamp">CONFIDENTIAL</div>
+    <div class="profile-title">INVESTIGATION FILE // SUBJECT BIO</div>
+    <div class="profile-detail">
+      มีความรู้พื้นฐานที่จำเป็นในการพัฒนาเกม 3D และทักษะด้าน Environment, Rigging และ Interactive Architecture
+    </div>
+    <div class="profile-badge-row">
+      <span class="badge-pill">Unity</span>
+      <span class="badge-pill">Blender</span>
+      <span class="badge-pill">Maya</span>
+      <span class="badge-pill">Affinity</span>
+      <span class="badge-pill">C# Scripting</span>
+    </div>
+    <div class="instructions-box">
+      <strong>🎯 3D Voxel Controls:</strong><br>
+      • <strong>คลิกซ้าย:</strong> วางบล็อก 3D บนกริด<br>
+      • <strong>Shift + คลิกซ้าย:</strong> ลบบล็อกที่ชี้<br>
+      • <strong>คลิกขวา + ลาก:</strong> หมุนมุมมองกล้อง (Orbit)<br>
+      • <strong>Scroll เมาส์:</strong> ซูมเข้า-ออก
+    </div>
+  </div>
+
+  <!-- Right: 3D Lighting & Transform Control Panel -->
   <div class="control-panel">
-    <h3>🔦 EVIDENCE INSPECTOR</h3>
-    
-    <div class="control-group">
-      <label for="lightIntensity">ความสว่างไฟฉาย (Flashlight): <span id="lightVal">3.5</span></label>
-      <input type="range" id="lightIntensity" min="0.5" max="8.0" step="0.1" value="3.5" />
+    <div class="panel-header">⚙️ EVIDENCE CONTROLS</div>
+
+    <div class="ctrl-item">
+      <label for="sliderLight">ความสว่างไฟหลัก: <span id="lightVal">1.8</span></label>
+      <input type="range" id="sliderLight" min="0.2" max="4.0" step="0.1" value="1.8" />
     </div>
 
-    <div class="control-group">
-      <label for="ambientIntensity">แสงแวดล้อมห้อง (Ambient): <span id="ambientVal">0.3</span></label>
-      <input type="range" id="ambientIntensity" min="0.0" max="1.5" step="0.05" value="0.3" />
+    <div class="ctrl-item">
+      <label for="sliderAmbient">แสงแวดล้อม (Ambient): <span id="ambientVal">0.6</span></label>
+      <input type="range" id="sliderAmbient" min="0.0" max="2.0" step="0.05" value="0.6" />
     </div>
 
-    <div class="control-group">
-      <label for="rotY">หมุนแนวระนาบ (Rotate Y): <span id="rotYVal">0°</span></label>
-      <input type="range" id="rotY" min="-180" max="180" step="1" value="0" />
+    <div class="ctrl-item">
+      <label for="sliderRotY">หมุนวัตถุแกน Y: <span id="rotYVal">0°</span></label>
+      <input type="range" id="sliderRotY" min="-180" max="180" step="1" value="0" />
     </div>
 
-    <div class="control-group">
-      <label for="rotX">หมุนแนวดิ่ง (Rotate X): <span id="rotXVal">0°</span></label>
-      <input type="range" id="rotX" min="-90" max="90" step="1" value="0" />
+    <div class="ctrl-item">
+      <label for="sliderRotX">หมุนวัตถุแกน X: <span id="rotXVal">0°</span></label>
+      <input type="range" id="sliderRotX" min="-90" max="90" step="1" value="0" />
     </div>
 
-    <div class="toggle-row">
-      <button id="btnAutoSpin" class="btn-toggle active">Auto-Spin: ON</button>
-      <button id="btnWireframe" class="btn-toggle">Wireframe: OFF</button>
+    <div class="ctrl-item">
+      <label>เลือกสี Voxel Paint:</label>
+      <div class="color-picker-row">
+        <div class="color-swatch active" style="background: #e5a93c;" data-color="0xe5a93c"></div>
+        <div class="color-swatch" style="background: #c92a2a;" data-color="0xc92a2a"></div>
+        <div class="color-swatch" style="background: #2b8a3e;" data-color="0x2b8a3e"></div>
+        <div class="color-swatch" style="background: #1971c2;" data-color="0x1971c2"></div>
+        <div class="color-swatch" style="background: #862e9c;" data-color="0x862e9c"></div>
+        <div class="color-swatch" style="background: #e2e8f0;" data-color="0xe2e8f0"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button id="btnAutoSpin" class="btn-action">Auto-Spin: OFF</button>
+      <button id="btnClear" class="btn-action">Clear All</button>
     </div>
   </div>
 
-  <!-- Dossier & Portfolio Text Details -->
-  <div class="content-wrapper">
-
-    <!-- Section 1: Suspect / Agent Profile -->
-    <div class="case-card">
-      <div class="classified-stamp">CONFIDENTIAL</div>
-      <div class="case-header">CASE FILE #2026 // INVESTIGATION DOSSIER</div>
-      <h1 class="agent-name">Thanesuan Noikong</h1>
-      
-      <div class="role-badge-list">
-        <span class="role-badge">Nickname: Teer (เธียร์)</span>
-        <span class="role-badge">Game Designer</span>
-        <span class="role-badge">3D Rigger & Animator</span>
-        <span class="role-badge">Senior Year 4</span>
-      </div>
-
-      <p class="detective-note">
-        "นักศึกษาชั้นปีที่ 4 คณะสถาปัตย์เทคโนโลยี สาขาเกมและอนิเมชั่น 
-        มีความหลงใหลในการพัฒนาเกม 3D ครบกระบวนการ ตั้งแต่งาน Pre-production, 3D Mesh Modeling, 
-        Rigging สรีระตัวละคร, Environment Level Design ไปจนถึงการจัดแสงและ Interactive Simulation บน Unity"
-      </p>
-
-      <div class="info-grid">
-        <div class="info-item">
-          <strong>FACULTY & MAJOR</strong>
-          คณะสถาปัตย์เทคโนโลยี<br>สาขา เกมและอนิเมชั่น
-        </div>
-        <div class="info-item">
-          <strong>EDUCATION & GPAX</strong>
-          มทร.รัตนโกสินทร์<br>GPAX: 3.50
-        </div>
-        <div class="info-item">
-          <strong>PRIMARY WEAPONS (SOFTWARE)</strong>
-          Unity, Blender, Maya, Affinity Suite
-        </div>
-        <div class="info-item">
-          <strong>STATUS & PLATFORM</strong>
-          Senior Final Year<br>Games deployed on itch.io
+  <!-- Bottom Right: Retro CRT TV Exhibit -->
+  <div class="tv-container">
+    <div class="tv-casing">
+      <div class="tv-screen-wrapper">
+        <div class="tv-content-frame">
+          <div>
+            <div class="tv-badge-header">
+              <span>CH-0<span id="tvChannelNum">1</span></span>
+              <span>● REC [2026]</span>
+            </div>
+            <div class="tv-project-name" id="tvProjectTitle">CHEMICAL CRASHOUT</div>
+          </div>
+          <div class="tv-desc" id="tvProjectDesc">
+            Unity Game Project: เกมจำลองห้องแล็บเคมี ระบบแต่งตัว PPE และจัดเก็บสารเคมี
+          </div>
+          <div class="tv-meta">
+            <span id="tvProjectTool">ENGINE: Unity C#</span>
+            <span>PORTFOLIO EXHIBIT</span>
+          </div>
         </div>
       </div>
 
-      <div class="hint-bar">
-        <span>💡 เลื่อนเมาส์เพื่อส่องไฟฉายสำรวจหลักฐาน 3D และเอกสารคดี</span>
+      <div class="tv-knobs">
+        <div class="tv-dial" id="tvDialNext" title="Click to Change Channel"></div>
+        <div class="tv-label">CHANNEL</div>
+        <div class="tv-dial" id="tvDialPower" title="Power / Static"></div>
+        <div class="tv-label">POWER</div>
       </div>
     </div>
-
-    <!-- Section 2: Core Evidence Exhibits (ทักษะและผลงานจาก Portfolio) -->
-    <div class="case-card">
-      <div class="case-header">EXHIBIT ANALYSIS // 3D COMPETENCIES</div>
-      
-      <div class="evidence-list">
-        <div class="evidence-card">
-          <h4>01. 3D Modeling & UV Mapping</h4>
-          <p>ความชำนาญในการขึ้นรูปโมเดลฮาร์ดเซอร์เฟส เช่น หุ่นยนต์สไปเดอร์โดรนใน Maya การกาง UV Mapping เป็นระเบียบ และการปั้นโมเดลโพรพส์/ฉากจำลองใน Blender</p>
-        </div>
-        <div class="evidence-card">
-          <h4>02. Character Rigging & Animation</h4>
-          <p>ทักษะการเซ็ตติ้งโครงกระดูก (Bone Rigging), คอนโทรลเลอร์ FK/IK และ Clean up animation frame สำหรับการเดินและการเคลื่อนไหวแบบ Real-time</p>
-        </div>
-        <div class="evidence-card">
-          <h4>03. Level Design & Environment</h4>
-          <p>การจัดองค์ประกอบฉากและ Greyboxing ใน Unity กำหนดมุมมองและเส้นทางการเดินของผู้เล่น โดยใช้วัตถุและแสงในการนำสายตา</p>
-        </div>
-        <div class="evidence-card">
-          <h4>04. VR / AR & Studio Lighting</h4>
-          <p>การจำลองการจัดแสงแบบ 3-Point Lighting, พัฒนาระบบ Augmented Reality และ Virtual Reality สำหรับ Interactive Game Mechanics</p>
-        </div>
-      </div>
-    </div>
-
   </div>
 
-  <!-- Three.js Interactive Engine Script -->
+  <!-- Background Detective Board Script (2D Canvas) -->
+  <script>
+    const corkCanvas = document.getElementById('corkboard-canvas');
+    const corkCtx = corkCanvas.getContext('2d');
+    const overlay = document.getElementById('flashlight-overlay');
+
+    let cw = (corkCanvas.width = window.innerWidth);
+    let ch = (corkCanvas.height = window.innerHeight);
+
+    window.addEventListener('resize', () => {
+      cw = corkCanvas.width = window.innerWidth;
+      ch = corkCanvas.height = window.innerHeight;
+      drawDetectiveBoard();
+    });
+
+    // Track mouse for flashlight
+    window.addEventListener('mousemove', (e) => {
+      overlay.style.setProperty('--mouse-x', `${e.clientX}px`);
+      overlay.style.setProperty('--mouse-y', `${e.clientY}px`);
+    });
+
+    // Generate Evidence Items on Board
+    const pins = [
+      { x: 0.18 * cw, y: 0.22 * ch, color: '#c92a2a', note: 'MAP A' },
+      { x: 0.28 * cw, y: 0.16 * ch, color: '#f59f00', note: 'SUSPECT 01' },
+      { x: 0.48 * cw, y: 0.20 * ch, color: '#c92a2a', note: 'EVIDENCE FILE' },
+      { x: 0.72 * cw, y: 0.15 * ch, color: '#1971c2', note: 'MECH BLUEPRINT' },
+      { x: 0.85 * cw, y: 0.28 * ch, color: '#c92a2a', note: 'CLASSIFIED' },
+      { x: 0.15 * cw, y: 0.65 * ch, color: '#f59f00', note: 'LEVEL DESIGN' },
+      { x: 0.42 * cw, y: 0.72 * ch, color: '#c92a2a', note: 'CRIME SCENE' },
+      { x: 0.78 * cw, y: 0.68 * ch, color: '#f59f00', note: 'TARGET' }
+    ];
+
+    function drawDetectiveBoard() {
+      // 1. Cork Texture Base
+      const gradient = corkCtx.createRadialGradient(cw/2, ch/2, 100, cw/2, ch/2, Math.max(cw, ch));
+      gradient.addColorStop(0, '#9c663b');
+      gradient.addColorStop(0.7, '#6b4220');
+      gradient.addColorStop(1, '#3b220e');
+      corkCtx.fillStyle = gradient;
+      corkCtx.fillRect(0, 0, cw, ch);
+
+      // Add cork noise
+      for (let i = 0; i < 2400; i++) {
+        corkCtx.fillStyle = Math.random() > 0.5 ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.06)';
+        corkCtx.fillRect(Math.random() * cw, Math.random() * ch, 2, 2);
+      }
+
+      // 2. Paper documents pinned to corkboard
+      const papers = [
+        { x: cw * 0.08, y: ch * 0.10, w: 220, h: 180, rot: -0.06, title: 'TOPOLOGY REPORT', lines: 6 },
+        { x: cw * 0.68, y: ch * 0.08, w: 260, h: 200, rot: 0.04, title: 'CLASSIFIED // RIGGING', lines: 7 },
+        { x: cw * 0.05, y: ch * 0.55, w: 200, h: 160, rot: 0.05, title: 'UNITY LAB AUDIT', lines: 5 },
+        { x: cw * 0.38, y: ch * 0.70, w: 230, h: 170, rot: -0.03, title: 'ENVIRONMENT STUDY', lines: 5 }
+      ];
+
+      papers.forEach(p => {
+        corkCtx.save();
+        corkCtx.translate(p.x, p.y);
+        corkCtx.rotate(p.rot);
+
+        // Drop Shadow
+        corkCtx.shadowColor = 'rgba(0,0,0,0.6)';
+        corkCtx.shadowBlur = 15;
+        corkCtx.shadowOffsetX = 6;
+        corkCtx.shadowOffsetY = 8;
+
+        // Paper
+        corkCtx.fillStyle = '#f1e7d0';
+        corkCtx.fillRect(0, 0, p.w, p.h);
+
+        // Border
+        corkCtx.strokeStyle = '#c8baa0';
+        corkCtx.lineWidth = 1;
+        corkCtx.strokeRect(0, 0, p.w, p.h);
+
+        // Header
+        corkCtx.shadowColor = 'transparent';
+        corkCtx.fillStyle = '#473c33';
+        corkCtx.font = '10px "Special Elite", monospace';
+        corkCtx.fillText(p.title, 14, 22);
+
+        // Content placeholder lines
+        corkCtx.fillStyle = 'rgba(80, 70, 60, 0.4)';
+        for (let l = 0; l < p.lines; l++) {
+          corkCtx.fillRect(14, 38 + l * 18, p.w - 28, 4);
+        }
+
+        // Tape effect on corners
+        corkCtx.fillStyle = 'rgba(240, 225, 175, 0.7)';
+        corkCtx.fillRect(p.w / 2 - 25, -6, 50, 14);
+
+        corkCtx.restore();
+      });
+
+      // 3. Connect Pins with Red Investigative String (ด้ายแดง)
+      corkCtx.beginPath();
+      corkCtx.strokeStyle = 'rgba(201, 42, 42, 0.85)';
+      corkCtx.lineWidth = 2.5;
+      corkCtx.shadowColor = 'rgba(0,0,0,0.7)';
+      corkCtx.shadowBlur = 4;
+      corkCtx.shadowOffsetY = 4;
+
+      for (let i = 0; i < pins.length - 1; i++) {
+        corkCtx.moveTo(pins[i].x, pins[i].y);
+        corkCtx.lineTo(pins[i+1].x, pins[i+1].y);
+      }
+      corkCtx.stroke();
+
+      // Additional cross-reference lines
+      corkCtx.beginPath();
+      corkCtx.moveTo(pins[0].x, pins[0].y);
+      corkCtx.lineTo(pins[2].x, pins[2].y);
+      corkCtx.moveTo(pins[3].x, pins[3].y);
+      corkCtx.lineTo(pins[6].x, pins[6].y);
+      corkCtx.moveTo(pins[1].x, pins[1].y);
+      corkCtx.lineTo(pins[5].x, pins[5].y);
+      corkCtx.stroke();
+
+      // 4. Draw Pins
+      corkCtx.shadowColor = 'rgba(0,0,0,0.8)';
+      corkCtx.shadowBlur = 8;
+      corkCtx.shadowOffsetX = 3;
+      corkCtx.shadowOffsetY = 5;
+
+      pins.forEach(pin => {
+        corkCtx.beginPath();
+        corkCtx.arc(pin.x, pin.y, 6.5, 0, Math.PI * 2);
+        corkCtx.fillStyle = pin.color;
+        corkCtx.fill();
+        corkCtx.strokeStyle = '#fff';
+        corkCtx.lineWidth = 1.5;
+        corkCtx.stroke();
+      });
+    }
+
+    drawDetectiveBoard();
+  </script>
+
+  <!-- Interactive 3D Voxel Studio Script (Three.js) -->
   <script type="module">
     import * as THREE from 'three';
 
-    // 1. Scene & Setup
+    // 1. Scene, Camera, Renderer
     const canvas = document.querySelector('#webgl-canvas');
-    const overlay = document.querySelector('#flashlight-overlay');
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x07090d, 0.05);
 
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(0, 0, 8.5);
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(16, 20, 24);
+    camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -439,224 +705,359 @@
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    // 2. Detective Evidence Object (Procedural 3D Drone / Artifact)
-    const evidenceGroup = new THREE.Group();
-    scene.add(evidenceGroup);
+    // 2. Voxel Objects & Workspace
+    const voxelGroup = new THREE.Group();
+    scene.add(voxelGroup);
 
-    // วัสดุหลัก
-    const detectiveMat = new THREE.MeshStandardMaterial({
-      color: 0x9ba1ad,
-      metalness: 0.85,
-      roughness: 0.35,
-      wireframe: false
-    });
+    const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+    const boxMaterials = new Map(); // Cache materials by color
 
-    const goldTrimMat = new THREE.MeshStandardMaterial({
-      color: 0xe5a93c,
-      metalness: 0.9,
-      roughness: 0.2
-    });
-
-    const lensMat = new THREE.MeshPhysicalMaterial({
-      color: 0x38bdf8,
-      metalness: 0.1,
-      roughness: 0.1,
-      transmission: 0.9,
-      transparent: true,
-      opacity: 0.85
-    });
-
-    // Body: Mechanical Evidence Device
-    const coreGeo = new THREE.DodecahedronGeometry(1.4, 1);
-    const coreMesh = new THREE.Mesh(coreGeo, detectiveMat);
-    coreMesh.castShadow = true;
-    coreMesh.receiveShadow = true;
-    evidenceGroup.add(coreMesh);
-
-    // Inner glowing sensor lens
-    const lensGeo = new THREE.SphereGeometry(0.7, 32, 32);
-    const lensMesh = new THREE.Mesh(lensGeo, lensMat);
-    coreMesh.add(lensMesh);
-
-    // Outer Detective Compass Ring
-    const ringGeo = new THREE.TorusGeometry(2.3, 0.05, 16, 100);
-    const ringMesh = new THREE.Mesh(ringGeo, goldTrimMat);
-    ringMesh.rotation.x = Math.PI / 4;
-    evidenceGroup.add(ringMesh);
-
-    const ring2Geo = new THREE.TorusGeometry(2.0, 0.03, 16, 100);
-    const ring2Mesh = new THREE.Mesh(ring2Geo, goldTrimMat);
-    ring2Mesh.rotation.y = Math.PI / 3;
-    evidenceGroup.add(ring2Mesh);
-
-    // Background Shadow Receiver Wall (กระดานสืบสวนด้านหลัง)
-    const backWallGeo = new THREE.PlaneGeometry(35, 25);
-    const backWallMat = new THREE.MeshStandardMaterial({
-      color: 0x090c12,
-      roughness: 0.9,
-      metalness: 0.1
-    });
-    const backWall = new THREE.Mesh(backWallGeo, backWallMat);
-    backWall.position.z = -3;
-    backWall.receiveShadow = true;
-    scene.add(backWall);
-
-    // Floating Dust / Atmospheric Crime Scene Particles
-    const dustCount = 180;
-    const dustGeo = new THREE.BufferGeometry();
-    const dustPositions = new Float32Array(dustCount * 3);
-    for (let i = 0; i < dustCount * 3; i += 3) {
-      dustPositions[i] = (Math.random() - 0.5) * 18;
-      dustPositions[i + 1] = (Math.random() - 0.5) * 18;
-      dustPositions[i + 2] = (Math.random() - 0.5) * 10;
+    function getVoxelMaterial(hexColor) {
+      if (!boxMaterials.has(hexColor)) {
+        boxMaterials.set(hexColor, new THREE.MeshStandardMaterial({
+          color: hexColor,
+          roughness: 0.35,
+          metalness: 0.15,
+        }));
+      }
+      return boxMaterials.get(hexColor);
     }
-    dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
-    const dustMat = new THREE.PointsMaterial({
-      size: 0.04,
-      color: 0xfde047,
-      transparent: true,
-      opacity: 0.5
-    });
-    const dustParticles = new THREE.Points(dustGeo, dustMat);
-    scene.add(dustParticles);
 
-    // 3. Lighting System (Ambient & Flashlight Spotlight)
-    const ambientLight = new THREE.AmbientLight(0x182030, 0.3);
+    let currentColor = 0xe5a93c;
+
+    // Roll-over Helper Cube (ไกด์บอกตำแหน่งเมาส์)
+    const rollOverGeo = new THREE.BoxGeometry(1.02, 1.02, 1.02);
+    const rollOverMat = new THREE.MeshBasicMaterial({
+      color: 0xef4444,
+      opacity: 0.45,
+      transparent: true,
+      wireframe: true
+    });
+    const rollOverMesh = new THREE.Mesh(rollOverGeo, rollOverMat);
+    scene.add(rollOverMesh);
+
+    // Interactive Ground Grid Plane
+    const gridSize = 16;
+    const gridHelper = new THREE.GridHelper(gridSize, gridSize, 0xe5a93c, 0x475569);
+    gridHelper.position.y = -0.01;
+    voxelGroup.add(gridHelper);
+
+    const planeGeo = new THREE.PlaneGeometry(gridSize, gridSize);
+    planeGeo.rotateX(-Math.PI / 2);
+    const planeMat = new THREE.MeshBasicMaterial({ visible: false });
+    const groundPlane = new THREE.Mesh(planeGeo, planeMat);
+    voxelGroup.add(groundPlane);
+
+    // Collision target list for raycasting
+    const objects = [groundPlane];
+
+    // Seed Initial Voxel Diorama (ตั้งเสาตัวอย่างไว้ให้เล่น)
+    function addInitialVoxel(x, y, z, color) {
+      const voxel = new THREE.Mesh(boxGeo, getVoxelMaterial(color));
+      voxel.position.set(x + 0.5, y + 0.5, z + 0.5);
+      voxel.castShadow = true;
+      voxel.receiveShadow = true;
+      voxelGroup.add(voxel);
+      objects.push(voxel);
+    }
+
+    // สร้างแท่นโมเดลตัวอย่างใจกลางกริด
+    for (let x = -2; x <= 2; x++) {
+      for (let z = -2; z <= 2; z++) {
+        addInitialVoxel(x, 0, z, 0x2f3846);
+      }
+    }
+    addInitialVoxel(0, 1, 0, 0xe5a93c);
+    addInitialVoxel(0, 2, 0, 0xe5a93c);
+    addInitialVoxel(1, 1, 0, 0xc92a2a);
+    addInitialVoxel(-1, 1, 0, 0x1971c2);
+
+    // 3. Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
 
-    // Flashlight SpotLight
-    const flashlight = new THREE.SpotLight(0xfffaed, 3.5);
-    flashlight.angle = Math.PI / 6;
-    flashlight.penumbra = 0.55;
-    flashlight.decay = 1.2;
-    flashlight.distance = 25;
-    flashlight.castShadow = true;
-    flashlight.shadow.mapSize.width = 1024;
-    flashlight.shadow.mapSize.height = 1024;
-    flashlight.position.set(0, 0, 7.5);
-    scene.add(flashlight);
+    const dirLight = new THREE.DirectionalLight(0xfff4d6, 1.8);
+    dirLight.position.set(15, 25, 12);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 1024;
+    dirLight.shadow.mapSize.height = 1024;
+    dirLight.shadow.camera.near = 0.5;
+    dirLight.shadow.camera.far = 50;
+    dirLight.shadow.camera.left = -15;
+    dirLight.shadow.camera.right = 15;
+    dirLight.shadow.camera.top = 15;
+    dirLight.shadow.camera.bottom = -15;
+    scene.add(dirLight);
 
-    const flashlightTarget = new THREE.Object3D();
-    scene.add(flashlightTarget);
-    flashlight.target = flashlightTarget;
+    const blueRimLight = new THREE.PointLight(0x38bdf8, 20, 40);
+    blueRimLight.position.set(-15, 10, -15);
+    scene.add(blueRimLight);
 
-    // Subtle Detective Blue Rim Light
-    const rimLight = new THREE.DirectionalLight(0x2563eb, 0.6);
-    rimLight.position.set(-6, -4, 2);
-    scene.add(rimLight);
-
-    // 4. Mouse Tracking & Raycasting
+    // 4. Raycasting & Interaction
     const raycaster = new THREE.Raycaster();
-    const mouseNorm = new THREE.Vector2();
-    let autoSpin = true;
+    const mouse = new THREE.Vector2();
+    let isShiftDown = false;
+    let isOrbiting = false;
+    let prevMousePos = { x: 0, y: 0 };
+    let cameraSpherical = { radius: 32, theta: Math.PI / 4, phi: Math.PI / 3.2 };
 
-    window.addEventListener('mousemove', (e) => {
-      // อัปเดต CSS Flashlight Vignette
-      overlay.style.setProperty('--mouse-x', `${e.clientX}px`);
-      overlay.style.setProperty('--mouse-y', `${e.clientY}px`);
+    function updateCameraFromSpherical() {
+      camera.position.x = cameraSpherical.radius * Math.sin(cameraSpherical.phi) * Math.sin(cameraSpherical.theta);
+      camera.position.y = cameraSpherical.radius * Math.cos(cameraSpherical.phi);
+      camera.position.z = cameraSpherical.radius * Math.sin(cameraSpherical.phi) * Math.cos(cameraSpherical.theta);
+      camera.lookAt(0, 1, 0);
+    }
+    updateCameraFromSpherical();
 
-      // Normalised Device Coordinates สำหรับ Three.js
-      mouseNorm.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mouseNorm.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    window.addEventListener('pointermove', (event) => {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-      // ปรับทิศทางไฟฉาย 3D ให้ส่องไปยังจุดที่เมาส์ชี้บนระนาบ Z = 0
-      raycaster.setFromCamera(mouseNorm, camera);
-      const targetZPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-      const hitPoint = new THREE.Vector3();
-      raycaster.ray.intersectPlane(targetZPlane, hitPoint);
+      // Handle Right-Click Camera Orbit Drag
+      if (isOrbiting) {
+        const deltaX = event.clientX - prevMousePos.x;
+        const deltaY = event.clientY - prevMousePos.y;
 
-      if (hitPoint) {
-        flashlightTarget.position.lerp(hitPoint, 0.2);
-        flashlight.position.x = hitPoint.x * 0.4;
-        flashlight.position.y = hitPoint.y * 0.4;
+        cameraSpherical.theta -= deltaX * 0.008;
+        cameraSpherical.phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, cameraSpherical.phi - deltaY * 0.008));
+        updateCameraFromSpherical();
+
+        prevMousePos = { x: event.clientX, y: event.clientY };
+        return;
+      }
+
+      // Update Roll-Over Helper Cube
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(objects, false);
+
+      if (intersects.length > 0) {
+        const intersect = intersects[0];
+        if (isShiftDown) {
+          if (intersect.object !== groundPlane) {
+            rollOverMesh.visible = true;
+            rollOverMesh.position.copy(intersect.object.position);
+          } else {
+            rollOverMesh.visible = false;
+          }
+        } else {
+          rollOverMesh.visible = true;
+          const position = new THREE.Vector3();
+          position.addVectors(intersect.point, intersect.face.normal);
+          position.floor().addScalar(0.5);
+          rollOverMesh.position.copy(position);
+        }
+      } else {
+        rollOverMesh.visible = false;
       }
     });
 
-    // 5. UI Control Panel Bindings
-    const sliderLight = document.getElementById('lightIntensity');
-    const labelLight = document.getElementById('lightVal');
-    const sliderAmbient = document.getElementById('ambientIntensity');
-    const labelAmbient = document.getElementById('ambientVal');
-    const sliderRotY = document.getElementById('rotY');
-    const labelRotY = document.getElementById('rotYVal');
-    const sliderRotX = document.getElementById('rotX');
-    const labelRotX = document.getElementById('rotXVal');
+    window.addEventListener('pointerdown', (event) => {
+      // ตรวจสอบว่าไม่คลิกโดน UI Card / Controls
+      if (event.target.closest('.profile-card, .control-panel, .tv-container, .center-title-container')) {
+        return;
+      }
+
+      if (event.button === 2) {
+        // Right Click: Camera Orbit
+        isOrbiting = true;
+        prevMousePos = { x: event.clientX, y: event.clientY };
+        return;
+      }
+
+      if (event.button === 0) {
+        // Left Click: Place or Delete Voxel
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(objects, false);
+
+        if (intersects.length > 0) {
+          const intersect = intersects[0];
+
+          // Delete Voxel
+          if (isShiftDown) {
+            if (intersect.object !== groundPlane) {
+              voxelGroup.remove(intersect.object);
+              objects.splice(objects.indexOf(intersect.object), 1);
+              intersect.object.geometry.dispose();
+              rollOverMesh.visible = false;
+            }
+          } 
+          // Place Voxel
+          else {
+            const voxel = new THREE.Mesh(boxGeo, getVoxelMaterial(currentColor));
+            voxel.castShadow = true;
+            voxel.receiveShadow = true;
+
+            const position = new THREE.Vector3();
+            position.addVectors(intersect.point, intersect.face.normal);
+            position.floor().addScalar(0.5);
+
+            // เช็กขอบเขต Grid
+            if (Math.abs(position.x) <= gridSize / 2 && Math.abs(position.z) <= gridSize / 2) {
+              voxel.position.copy(position);
+              voxelGroup.add(voxel);
+              objects.push(voxel);
+            }
+          }
+        }
+      }
+    });
+
+    window.addEventListener('pointerup', (event) => {
+      if (event.button === 2) isOrbiting = false;
+    });
+
+    window.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    // Zooming with wheel
+    window.addEventListener('wheel', (e) => {
+      cameraSpherical.radius = Math.max(8, Math.min(50, cameraSpherical.radius + e.deltaY * 0.03));
+      updateCameraFromSpherical();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Shift') isShiftDown = true;
+    });
+    window.addEventListener('keyup', (e) => {
+      if (e.key === 'Shift') isShiftDown = false;
+    });
+
+    // 5. Control Panel UI Listeners
+    const sliderLight = document.getElementById('sliderLight');
+    const lightVal = document.getElementById('lightVal');
+    const sliderAmbient = document.getElementById('sliderAmbient');
+    const ambientVal = document.getElementById('ambientVal');
+    const sliderRotY = document.getElementById('sliderRotY');
+    const rotYVal = document.getElementById('rotYVal');
+    const sliderRotX = document.getElementById('sliderRotX');
+    const rotXVal = document.getElementById('rotXVal');
     const btnAutoSpin = document.getElementById('btnAutoSpin');
-    const btnWireframe = document.getElementById('btnWireframe');
+    const btnClear = document.getElementById('btnClear');
 
     sliderLight.addEventListener('input', (e) => {
       const val = parseFloat(e.target.value);
-      flashlight.intensity = val;
-      labelLight.textContent = val.toFixed(1);
+      dirLight.intensity = val;
+      lightVal.textContent = val.toFixed(1);
     });
 
     sliderAmbient.addEventListener('input', (e) => {
       const val = parseFloat(e.target.value);
       ambientLight.intensity = val;
-      labelAmbient.textContent = val.toFixed(2);
+      ambientVal.textContent = val.toFixed(2);
     });
 
     sliderRotY.addEventListener('input', (e) => {
       const deg = parseInt(e.target.value);
-      labelRotY.textContent = `${deg}°`;
-      evidenceGroup.rotation.y = THREE.MathUtils.degToRad(deg);
+      rotYVal.textContent = `${deg}°`;
+      voxelGroup.rotation.y = THREE.MathUtils.degToRad(deg);
     });
 
     sliderRotX.addEventListener('input', (e) => {
       const deg = parseInt(e.target.value);
-      labelRotX.textContent = `${deg}°`;
-      evidenceGroup.rotation.x = THREE.MathUtils.degToRad(deg);
+      rotXVal.textContent = `${deg}°`;
+      voxelGroup.rotation.x = THREE.MathUtils.degToRad(deg);
     });
 
+    let autoSpin = false;
     btnAutoSpin.addEventListener('click', () => {
       autoSpin = !autoSpin;
       btnAutoSpin.classList.toggle('active', autoSpin);
       btnAutoSpin.textContent = `Auto-Spin: ${autoSpin ? 'ON' : 'OFF'}`;
     });
 
-    btnWireframe.addEventListener('click', () => {
-      const isWire = !detectiveMat.wireframe;
-      detectiveMat.wireframe = isWire;
-      goldTrimMat.wireframe = isWire;
-      btnWireframe.classList.toggle('active', isWire);
-      btnWireframe.textContent = `Wireframe: ${isWire ? 'ON' : 'OFF'}`;
+    btnClear.addEventListener('click', () => {
+      const voxelsToRemove = objects.filter(obj => obj !== groundPlane);
+      voxelsToRemove.forEach(v => {
+        voxelGroup.remove(v);
+        v.geometry.dispose();
+      });
+      objects.length = 1; // เหลือ groundPlane
     });
 
-    // Resize Handler
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+    // Color Swatch Selection
+    document.querySelectorAll('.color-swatch').forEach(swatch => {
+      swatch.addEventListener('click', () => {
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+        swatch.classList.add('active');
+        currentColor = parseInt(swatch.dataset.color);
+      });
     });
 
-    // 6. Animation Loop
+    // 6. Retro CRT TV Channel Carousel
+    const tvProjects = [
+      {
+        title: "CHEMICAL CRASHOUT",
+        desc: "Unity Game: ระบบแต่งตัว Safety PPE, เข้าจัดเก็บสารเคมีในห้องแล็บ และเกมเพลย์ Interactive",
+        tool: "ENGINE: Unity 3D / C#"
+      },
+      {
+        title: "SPIDER MECH DRONE",
+        desc: "Maya 3D Model: การปั้น Hard-surface Mecha, จัดเรียง UV Mapping ตาราง 2D และเท็กซ์เจอร์",
+        tool: "SOFTWARE: Autodesk Maya"
+      },
+      {
+        title: "HUMANOID BONE RIG",
+        desc: "Character Rigging: ติดตั้งกระดูก IK/FK, Spine Controllers และ Clean up frame animation",
+        tool: "SOFTWARE: Maya & Mixamo"
+      },
+      {
+        title: "LEVEL & ENVIRONMENT",
+        desc: "Unity Greybox: ออกแบบเส้นทางนำสายตาผู้เล่น พร้อมจัดแสง 3-Point Lighting Studio[cite: 3]",
+        tool: "PIPELINE: Blender to Unity"
+      }
+    ];
+
+    let currentChannel = 0;
+    const tvChannelNum = document.getElementById('tvChannelNum');
+    const tvProjectTitle = document.getElementById('tvProjectTitle');
+    const tvProjectDesc = document.getElementById('tvProjectDesc');
+    const tvProjectTool = document.getElementById('tvProjectTool');
+    const tvDialNext = document.getElementById('tvDialNext');
+    const tvDialPower = document.getElementById('tvDialPower');
+    let tvPowerOn = true;
+
+    function updateTVChannel() {
+      const p = tvProjects[currentChannel];
+      tvChannelNum.textContent = currentChannel + 1;
+      tvProjectTitle.textContent = p.title;
+      tvProjectDesc.textContent = p.desc;
+      tvProjectTool.textContent = p.tool;
+    }
+
+    tvDialNext.addEventListener('click', () => {
+      if (!tvPowerOn) return;
+      currentChannel = (currentChannel + 1) % tvProjects.length;
+      updateTVChannel();
+    });
+
+    tvDialPower.addEventListener('click', () => {
+      tvPowerOn = !tvPowerOn;
+      const screen = document.querySelector('.tv-content-frame');
+      screen.style.opacity = tvPowerOn ? '1' : '0.1';
+    });
+
+    // 7. Animation Loop
     const clock = new THREE.Clock();
-
     function animate() {
       requestAnimationFrame(animate);
       const delta = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
 
       if (autoSpin) {
-        evidenceGroup.rotation.y += delta * 0.4;
-        ringMesh.rotation.z += delta * 0.3;
-        ring2Mesh.rotation.x -= delta * 0.25;
-
-        // อัปเดตตัวเลข Slider ตามการหมุนอัตโนมัติ
-        const currentDegY = Math.round(THREE.MathUtils.radToDeg(evidenceGroup.rotation.y) % 360);
-        labelRotY.textContent = `${currentDegY}°`;
+        voxelGroup.rotation.y += delta * 0.4;
+        const deg = Math.round(THREE.MathUtils.radToDeg(voxelGroup.rotation.y) % 360);
+        rotYVal.textContent = `${deg}°`;
+        sliderRotY.value = deg;
       }
-
-      // วัตถุลอยเบาๆ (Floating Bob)
-      evidenceGroup.position.y = Math.sin(elapsed * 1.5) * 0.15;
-
-      // หมุนละอองฝุ่นในอากาศ
-      dustParticles.rotation.y = elapsed * 0.02;
 
       renderer.render(scene, camera);
     }
 
     animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
   </script>
 </body>
 </html>
