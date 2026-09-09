@@ -1,155 +1,307 @@
-# TeerTT.github.io
-<!DOCTYPE html>
+# TeerTT.github.io<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Thanesuan Noikong (Teer) | 3D Game & Animation Portfolio</title>
+  <title>CASE FILE: Thanesuan Noikong (Teer) | 3D Portfolio</title>
   
-  <!-- Google Fonts -->
+  <!-- Fonts: Google Fonts (Special Elite & Sarabun) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&family=Special+Elite&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --bg-color: #07090d;
+      --paper-color: #12161f;
+      --paper-border: #2c3342;
+      --accent-gold: #e5a93c;
+      --accent-red: #c93b3b;
+      --text-main: #d1d7e0;
+      --text-dim: #828c9e;
+      --font-detective: 'Special Elite', monospace;
+      --font-body: 'Sarabun', sans-serif;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      cursor: crosshair;
     }
 
     body {
-      background-color: #0b0f19;
-      color: #f3f4f6;
-      font-family: 'Kanit', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: var(--font-body);
       overflow-x: hidden;
       min-height: 100vh;
+      position: relative;
     }
 
+    /* Flashlight Vignette overlay following cursor */
+    #flashlight-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 2;
+      background: radial-gradient(
+        circle 320px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(255, 235, 190, 0.08) 0%,
+        rgba(10, 14, 22, 0.65) 45%,
+        rgba(4, 6, 10, 0.94) 85%
+      );
+      mix-blend-mode: screen;
+      transition: opacity 0.2s ease;
+    }
+
+    /* 3D WebGL Canvas */
     #webgl-canvas {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      z-index: 0;
-      pointer-events: none;
+      z-index: 1;
     }
 
-    .container {
-      position: relative;
-      z-index: 1;
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 60px 24px;
+    /* Control Panel (ด้านขวาบน) */
+    .control-panel {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 10;
+      background: rgba(14, 18, 25, 0.88);
+      border: 1px solid var(--paper-border);
+      border-left: 4px solid var(--accent-gold);
+      backdrop-filter: blur(10px);
+      padding: 18px 22px;
+      border-radius: 8px;
+      width: 290px;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.8);
+      font-family: var(--font-detective);
+    }
+
+    .control-panel h3 {
+      font-size: 1rem;
+      color: var(--accent-gold);
+      margin-bottom: 14px;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .control-group {
+      margin-bottom: 12px;
       display: flex;
       flex-direction: column;
-      gap: 32px;
+      gap: 6px;
     }
 
-    .glass-card {
-      background: rgba(17, 24, 39, 0.65);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+    .control-group label {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .control-group input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 5px;
+      background: #252c3a;
+      border-radius: 3px;
+      outline: none;
+    }
+
+    .control-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: var(--accent-gold);
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--accent-gold);
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--paper-border);
+    }
+
+    .btn-toggle {
+      background: rgba(229, 169, 60, 0.12);
+      border: 1px solid var(--accent-gold);
+      color: var(--accent-gold);
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-family: var(--font-detective);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-toggle:hover, .btn-toggle.active {
+      background: var(--accent-gold);
+      color: #000;
+    }
+
+    /* Main Content Dossier / Case File */
+    .content-wrapper {
+      position: relative;
+      z-index: 5;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 24px 100px;
+      pointer-events: none; /* ให้คลิกทะลุไปหมุนโมเดลได้ เว้นแต่ส่วนที่มีคลาส .clickable */
+    }
+
+    .case-card {
+      pointer-events: auto;
+      background: rgba(18, 22, 31, 0.78);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 40px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(8px);
+      border-radius: 6px;
+      padding: 36px;
+      margin-bottom: 28px;
+      position: relative;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
     }
 
-    .hero-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #60a5fa, #a855f7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .classified-stamp {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      font-family: var(--font-detective);
+      color: var(--accent-red);
+      font-size: 1.1rem;
+      border: 2px solid var(--accent-red);
+      padding: 4px 10px;
+      letter-spacing: 2px;
+      transform: rotate(6deg);
+      user-select: none;
+    }
+
+    .case-header {
+      font-family: var(--font-detective);
+      font-size: 0.95rem;
+      color: var(--accent-gold);
       margin-bottom: 8px;
+      letter-spacing: 2px;
     }
 
-    .hero-subtitle {
-      font-size: 1.25rem;
-      color: #93c5fd;
-      font-weight: 400;
-      margin-bottom: 16px;
+    .agent-name {
+      font-family: var(--font-detective);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
     }
 
-    .badge-bar {
+    .role-badge-list {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 16px;
+      gap: 8px;
+      margin-bottom: 20px;
     }
 
-    .badge {
-      background: rgba(96, 165, 250, 0.12);
-      border: 1px solid rgba(96, 165, 250, 0.3);
-      color: #bfdbfe;
-      padding: 6px 14px;
-      border-radius: 9999px;
+    .role-badge {
+      background: rgba(229, 169, 60, 0.12);
+      border: 1px solid rgba(229, 169, 60, 0.4);
+      color: #f7d28b;
+      padding: 4px 12px;
+      font-size: 0.85rem;
+      font-family: var(--font-detective);
+      border-radius: 3px;
+    }
+
+    .detective-note {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #b8c0cc;
+      border-left: 3px solid var(--paper-border);
+      padding-left: 16px;
+      margin-bottom: 20px;
+    }
+
+    /* Grid Displays */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
       font-size: 0.9rem;
     }
 
-    .section-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.4rem;
-      color: #f9fafb;
-      margin-bottom: 16px;
-      border-left: 4px solid #a855f7;
-      padding-left: 12px;
+    .info-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--paper-border);
+      padding: 14px;
+      border-radius: 4px;
     }
 
-    .text-content {
-      color: #d1d5db;
-      line-height: 1.8;
-      font-size: 1.05rem;
-      font-weight: 300;
+    .info-item strong {
+      display: block;
+      color: var(--accent-gold);
+      font-family: var(--font-detective);
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+      letter-spacing: 1px;
     }
 
-    .skills-grid {
+    .evidence-list {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 16px;
-      margin-top: 12px;
+      margin-top: 14px;
     }
 
-    .skill-pill {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .evidence-card {
+      background: rgba(10, 14, 20, 0.7);
+      border: 1px solid #1f2735;
+      padding: 16px;
+      border-radius: 4px;
       transition: all 0.25s ease;
     }
 
-    .skill-pill:hover {
-      background: rgba(168, 85, 247, 0.15);
-      border-color: rgba(168, 85, 247, 0.4);
+    .evidence-card:hover {
+      border-color: var(--accent-gold);
       transform: translateY(-2px);
     }
 
-    .skill-name {
-      font-weight: 500;
+    .evidence-card h4 {
+      font-family: var(--font-detective);
       color: #f3f4f6;
+      margin-bottom: 6px;
+      font-size: 1rem;
     }
 
-    .skill-type {
+    .evidence-card p {
+      font-size: 0.88rem;
+      color: #9aa4b2;
+      line-height: 1.5;
+    }
+
+    .hint-bar {
+      font-family: var(--font-detective);
       font-size: 0.8rem;
-      color: #9ca3af;
-    }
-
-    .interactive-hint {
-      display: inline-block;
-      margin-top: 16px;
-      font-size: 0.85rem;
-      color: #6b7280;
+      color: #717d91;
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
   </style>
 
-  <!-- Import maps polyfill for ES Module Three.js -->
+  <!-- Import maps for Three.js -->
   <script type="importmap">
     {
       "imports": {
@@ -159,171 +311,347 @@
   </script>
 </head>
 <body>
+
+  <!-- Flashlight beam overlay -->
+  <div id="flashlight-overlay"></div>
+
+  <!-- WebGL Render Canvas -->
   <canvas id="webgl-canvas"></canvas>
 
-  <main class="container">
-    <!-- Header / Intro Card -->
-    <section class="glass-card">
-      <h1 class="hero-title">Thanesuan Noikong</h1>
-      <p class="hero-subtitle">Teer • Game Developer & 3D Artist</p>
+  <!-- Detective Investigation Control Panel -->
+  <div class="control-panel">
+    <h3>🔦 EVIDENCE INSPECTOR</h3>
+    
+    <div class="control-group">
+      <label for="lightIntensity">ความสว่างไฟฉาย (Flashlight): <span id="lightVal">3.5</span></label>
+      <input type="range" id="lightIntensity" min="0.5" max="8.0" step="0.1" value="3.5" />
+    </div>
+
+    <div class="control-group">
+      <label for="ambientIntensity">แสงแวดล้อมห้อง (Ambient): <span id="ambientVal">0.3</span></label>
+      <input type="range" id="ambientIntensity" min="0.0" max="1.5" step="0.05" value="0.3" />
+    </div>
+
+    <div class="control-group">
+      <label for="rotY">หมุนแนวระนาบ (Rotate Y): <span id="rotYVal">0°</span></label>
+      <input type="range" id="rotY" min="-180" max="180" step="1" value="0" />
+    </div>
+
+    <div class="control-group">
+      <label for="rotX">หมุนแนวดิ่ง (Rotate X): <span id="rotXVal">0°</span></label>
+      <input type="range" id="rotX" min="-90" max="90" step="1" value="0" />
+    </div>
+
+    <div class="toggle-row">
+      <button id="btnAutoSpin" class="btn-toggle active">Auto-Spin: ON</button>
+      <button id="btnWireframe" class="btn-toggle">Wireframe: OFF</button>
+    </div>
+  </div>
+
+  <!-- Dossier & Portfolio Text Details -->
+  <div class="content-wrapper">
+
+    <!-- Section 1: Suspect / Agent Profile -->
+    <div class="case-card">
+      <div class="classified-stamp">CONFIDENTIAL</div>
+      <div class="case-header">CASE FILE #2026 // INVESTIGATION DOSSIER</div>
+      <h1 class="agent-name">Thanesuan Noikong</h1>
       
-      <p class="text-content">
-        นักศึกษาชั้นปีที่ 4 คณะสถาปัตย์เทคโนโลยี สาขาเกมและอนิเมชั่น 
-        มีความรู้พื้นฐานและทักษะที่จำเป็นในการพัฒนาเกม 3D ครบวงจร ทั้งด้านการขึ้นโมเดล จัดแสง จัดการ Asset และระบบ Interactive
+      <div class="role-badge-list">
+        <span class="role-badge">Nickname: Teer (เธียร์)</span>
+        <span class="role-badge">Game Designer</span>
+        <span class="role-badge">3D Rigger & Animator</span>
+        <span class="role-badge">Senior Year 4</span>
+      </div>
+
+      <p class="detective-note">
+        "นักศึกษาชั้นปีที่ 4 คณะสถาปัตย์เทคโนโลยี สาขาเกมและอนิเมชั่น 
+        มีความหลงใหลในการพัฒนาเกม 3D ครบกระบวนการ ตั้งแต่งาน Pre-production, 3D Mesh Modeling, 
+        Rigging สรีระตัวละคร, Environment Level Design ไปจนถึงการจัดแสงและ Interactive Simulation บน Unity"
       </p>
 
-      <div class="badge-bar">
-        <span class="badge">Faculty of Architecture Technology</span>
-        <span class="badge">Game & Animation</span>
-        <span class="badge">4th Year Senior</span>
-      </div>
-      <span class="interactive-hint">✦ เลื่อนเมาส์ไปมาเพื่อหมุนดูวัตถุ 3D พื้นหลัง</span>
-    </section>
-
-    <!-- Software Toolset Card -->
-    <section class="glass-card">
-      <h2 class="section-title">Software & Tools</h2>
-      <div class="skills-grid">
-        <div class="skill-pill">
-          <span class="skill-name">Unity</span>
-          <span class="skill-type">Game Engine</span>
+      <div class="info-grid">
+        <div class="info-item">
+          <strong>FACULTY & MAJOR</strong>
+          คณะสถาปัตย์เทคโนโลยี<br>สาขา เกมและอนิเมชั่น
         </div>
-        <div class="skill-pill">
-          <span class="skill-name">Blender</span>
-          <span class="skill-type">3D Pipeline</span>
+        <div class="info-item">
+          <strong>EDUCATION & GPAX</strong>
+          มทร.รัตนโกสินทร์<br>GPAX: 3.50
         </div>
-        <div class="skill-pill">
-          <span class="skill-name">Autodesk Maya</span>
-          <span class="skill-type">Modeling & Rigging</span>
+        <div class="info-item">
+          <strong>PRIMARY WEAPONS (SOFTWARE)</strong>
+          Unity, Blender, Maya, Affinity Suite
         </div>
-        <div class="skill-pill">
-          <span class="skill-name">Affinity Suite</span>
-          <span class="skill-type">2D / Texturing</span>
+        <div class="info-item">
+          <strong>STATUS & PLATFORM</strong>
+          Senior Final Year<br>Games deployed on itch.io
         </div>
       </div>
-    </section>
-  </main>
 
+      <div class="hint-bar">
+        <span>💡 เลื่อนเมาส์เพื่อส่องไฟฉายสำรวจหลักฐาน 3D และเอกสารคดี</span>
+      </div>
+    </div>
+
+    <!-- Section 2: Core Evidence Exhibits (ทักษะและผลงานจาก Portfolio) -->
+    <div class="case-card">
+      <div class="case-header">EXHIBIT ANALYSIS // 3D COMPETENCIES</div>
+      
+      <div class="evidence-list">
+        <div class="evidence-card">
+          <h4>01. 3D Modeling & UV Mapping</h4>
+          <p>ความชำนาญในการขึ้นรูปโมเดลฮาร์ดเซอร์เฟส เช่น หุ่นยนต์สไปเดอร์โดรนใน Maya การกาง UV Mapping เป็นระเบียบ และการปั้นโมเดลโพรพส์/ฉากจำลองใน Blender</p>
+        </div>
+        <div class="evidence-card">
+          <h4>02. Character Rigging & Animation</h4>
+          <p>ทักษะการเซ็ตติ้งโครงกระดูก (Bone Rigging), คอนโทรลเลอร์ FK/IK และ Clean up animation frame สำหรับการเดินและการเคลื่อนไหวแบบ Real-time</p>
+        </div>
+        <div class="evidence-card">
+          <h4>03. Level Design & Environment</h4>
+          <p>การจัดองค์ประกอบฉากและ Greyboxing ใน Unity กำหนดมุมมองและเส้นทางการเดินของผู้เล่น โดยใช้วัตถุและแสงในการนำสายตา</p>
+        </div>
+        <div class="evidence-card">
+          <h4>04. VR / AR & Studio Lighting</h4>
+          <p>การจำลองการจัดแสงแบบ 3-Point Lighting, พัฒนาระบบ Augmented Reality และ Virtual Reality สำหรับ Interactive Game Mechanics</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Three.js Interactive Engine Script -->
   <script type="module">
     import * as THREE from 'three';
 
+    // 1. Scene & Setup
     const canvas = document.querySelector('#webgl-canvas');
+    const overlay = document.querySelector('#flashlight-overlay');
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0b0f19, 0.04);
+    scene.fog = new THREE.FogExp2(0x07090d, 0.05);
 
-    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(0, 0, 8);
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 0, 8.5);
 
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    // Group for mouse interaction
-    const group = new THREE.Group();
-    scene.add(group);
+    // 2. Detective Evidence Object (Procedural 3D Drone / Artifact)
+    const evidenceGroup = new THREE.Group();
+    scene.add(evidenceGroup);
 
-    // 1. Center Floating Polyhedron (Game Mesh representation)
-    const polyGeo = new THREE.IcosahedronGeometry(1.8, 0);
-    const polyMat = new THREE.MeshStandardMaterial({
-      color: 0x60a5fa,
-      metalness: 0.7,
-      roughness: 0.2,
-      wireframe: false,
+    // วัสดุหลัก
+    const detectiveMat = new THREE.MeshStandardMaterial({
+      color: 0x9ba1ad,
+      metalness: 0.85,
+      roughness: 0.35,
+      wireframe: false
     });
-    const polyMesh = new THREE.Mesh(polyGeo, polyMat);
-    group.add(polyMesh);
 
-    // 2. Wireframe Overlay
-    const wireMat = new THREE.MeshBasicMaterial({
-      color: 0xc084fc,
-      wireframe: true,
+    const goldTrimMat = new THREE.MeshStandardMaterial({
+      color: 0xe5a93c,
+      metalness: 0.9,
+      roughness: 0.2
+    });
+
+    const lensMat = new THREE.MeshPhysicalMaterial({
+      color: 0x38bdf8,
+      metalness: 0.1,
+      roughness: 0.1,
+      transmission: 0.9,
       transparent: true,
-      opacity: 0.4
+      opacity: 0.85
     });
-    const wireMesh = new THREE.Mesh(polyGeo, wireMat);
-    wireMesh.scale.setScalar(1.02);
-    polyMesh.add(wireMesh);
 
-    // 3. Floating Orbit Ring
-    const torusGeo = new THREE.TorusGeometry(3.0, 0.04, 16, 100);
-    const torusMat = new THREE.MeshStandardMaterial({
-      color: 0xa855f7,
-      emissive: 0x581c87,
-      roughness: 0.3
+    // Body: Mechanical Evidence Device
+    const coreGeo = new THREE.DodecahedronGeometry(1.4, 1);
+    const coreMesh = new THREE.Mesh(coreGeo, detectiveMat);
+    coreMesh.castShadow = true;
+    coreMesh.receiveShadow = true;
+    evidenceGroup.add(coreMesh);
+
+    // Inner glowing sensor lens
+    const lensGeo = new THREE.SphereGeometry(0.7, 32, 32);
+    const lensMesh = new THREE.Mesh(lensGeo, lensMat);
+    coreMesh.add(lensMesh);
+
+    // Outer Detective Compass Ring
+    const ringGeo = new THREE.TorusGeometry(2.3, 0.05, 16, 100);
+    const ringMesh = new THREE.Mesh(ringGeo, goldTrimMat);
+    ringMesh.rotation.x = Math.PI / 4;
+    evidenceGroup.add(ringMesh);
+
+    const ring2Geo = new THREE.TorusGeometry(2.0, 0.03, 16, 100);
+    const ring2Mesh = new THREE.Mesh(ring2Geo, goldTrimMat);
+    ring2Mesh.rotation.y = Math.PI / 3;
+    evidenceGroup.add(ring2Mesh);
+
+    // Background Shadow Receiver Wall (กระดานสืบสวนด้านหลัง)
+    const backWallGeo = new THREE.PlaneGeometry(35, 25);
+    const backWallMat = new THREE.MeshStandardMaterial({
+      color: 0x090c12,
+      roughness: 0.9,
+      metalness: 0.1
     });
-    const torusMesh = new THREE.Mesh(torusGeo, torusMat);
-    torusMesh.rotation.x = Math.PI / 3;
-    group.add(torusMesh);
+    const backWall = new THREE.Mesh(backWallGeo, backWallMat);
+    backWall.position.z = -3;
+    backWall.receiveShadow = true;
+    scene.add(backWall);
 
-    // 4. Background Dust Particles
-    const particleCount = 200;
-    const particleGeo = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount * 3);
-
-    for (let i = 0; i < particleCount * 3; i += 3) {
-      positions[i] = (Math.random() - 0.5) * 20;
-      positions[i + 1] = (Math.random() - 0.5) * 20;
-      positions[i + 2] = (Math.random() - 0.5) * 15;
+    // Floating Dust / Atmospheric Crime Scene Particles
+    const dustCount = 180;
+    const dustGeo = new THREE.BufferGeometry();
+    const dustPositions = new Float32Array(dustCount * 3);
+    for (let i = 0; i < dustCount * 3; i += 3) {
+      dustPositions[i] = (Math.random() - 0.5) * 18;
+      dustPositions[i + 1] = (Math.random() - 0.5) * 18;
+      dustPositions[i + 2] = (Math.random() - 0.5) * 10;
     }
-
-    particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    const particleMat = new THREE.PointsMaterial({
-      size: 0.05,
-      color: 0x93c5fd,
+    dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+    const dustMat = new THREE.PointsMaterial({
+      size: 0.04,
+      color: 0xfde047,
       transparent: true,
-      opacity: 0.6
+      opacity: 0.5
     });
-    const particles = new THREE.Points(particleGeo, particleMat);
-    scene.add(particles);
+    const dustParticles = new THREE.Points(dustGeo, dustMat);
+    scene.add(dustParticles);
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    // 3. Lighting System (Ambient & Flashlight Spotlight)
+    const ambientLight = new THREE.AmbientLight(0x182030, 0.3);
     scene.add(ambientLight);
 
-    const blueLight = new THREE.PointLight(0x38bdf8, 30, 20);
-    blueLight.position.set(4, 4, 4);
-    scene.add(blueLight);
+    // Flashlight SpotLight
+    const flashlight = new THREE.SpotLight(0xfffaed, 3.5);
+    flashlight.angle = Math.PI / 6;
+    flashlight.penumbra = 0.55;
+    flashlight.decay = 1.2;
+    flashlight.distance = 25;
+    flashlight.castShadow = true;
+    flashlight.shadow.mapSize.width = 1024;
+    flashlight.shadow.mapSize.height = 1024;
+    flashlight.position.set(0, 0, 7.5);
+    scene.add(flashlight);
 
-    const purpleLight = new THREE.PointLight(0xa855f7, 30, 20);
-    purpleLight.position.set(-4, -3, 3);
-    scene.add(purpleLight);
+    const flashlightTarget = new THREE.Object3D();
+    scene.add(flashlightTarget);
+    flashlight.target = flashlightTarget;
 
-    // Mouse Tracking
-    let targetX = 0;
-    let targetY = 0;
-    const windowHalfX = window.innerWidth / 2;
-    const windowHalfY = window.innerHeight / 2;
+    // Subtle Detective Blue Rim Light
+    const rimLight = new THREE.DirectionalLight(0x2563eb, 0.6);
+    rimLight.position.set(-6, -4, 2);
+    scene.add(rimLight);
+
+    // 4. Mouse Tracking & Raycasting
+    const raycaster = new THREE.Raycaster();
+    const mouseNorm = new THREE.Vector2();
+    let autoSpin = true;
 
     window.addEventListener('mousemove', (e) => {
-      targetX = (e.clientX - windowHalfX) * 0.0008;
-      targetY = (e.clientY - windowHalfY) * 0.0008;
+      // อัปเดต CSS Flashlight Vignette
+      overlay.style.setProperty('--mouse-x', `${e.clientX}px`);
+      overlay.style.setProperty('--mouse-y', `${e.clientY}px`);
+
+      // Normalised Device Coordinates สำหรับ Three.js
+      mouseNorm.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseNorm.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      // ปรับทิศทางไฟฉาย 3D ให้ส่องไปยังจุดที่เมาส์ชี้บนระนาบ Z = 0
+      raycaster.setFromCamera(mouseNorm, camera);
+      const targetZPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+      const hitPoint = new THREE.Vector3();
+      raycaster.ray.intersectPlane(targetZPlane, hitPoint);
+
+      if (hitPoint) {
+        flashlightTarget.position.lerp(hitPoint, 0.2);
+        flashlight.position.x = hitPoint.x * 0.4;
+        flashlight.position.y = hitPoint.y * 0.4;
+      }
     });
 
-    // Handle Resize
+    // 5. UI Control Panel Bindings
+    const sliderLight = document.getElementById('lightIntensity');
+    const labelLight = document.getElementById('lightVal');
+    const sliderAmbient = document.getElementById('ambientIntensity');
+    const labelAmbient = document.getElementById('ambientVal');
+    const sliderRotY = document.getElementById('rotY');
+    const labelRotY = document.getElementById('rotYVal');
+    const sliderRotX = document.getElementById('rotX');
+    const labelRotX = document.getElementById('rotXVal');
+    const btnAutoSpin = document.getElementById('btnAutoSpin');
+    const btnWireframe = document.getElementById('btnWireframe');
+
+    sliderLight.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      flashlight.intensity = val;
+      labelLight.textContent = val.toFixed(1);
+    });
+
+    sliderAmbient.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      ambientLight.intensity = val;
+      labelAmbient.textContent = val.toFixed(2);
+    });
+
+    sliderRotY.addEventListener('input', (e) => {
+      const deg = parseInt(e.target.value);
+      labelRotY.textContent = `${deg}°`;
+      evidenceGroup.rotation.y = THREE.MathUtils.degToRad(deg);
+    });
+
+    sliderRotX.addEventListener('input', (e) => {
+      const deg = parseInt(e.target.value);
+      labelRotX.textContent = `${deg}°`;
+      evidenceGroup.rotation.x = THREE.MathUtils.degToRad(deg);
+    });
+
+    btnAutoSpin.addEventListener('click', () => {
+      autoSpin = !autoSpin;
+      btnAutoSpin.classList.toggle('active', autoSpin);
+      btnAutoSpin.textContent = `Auto-Spin: ${autoSpin ? 'ON' : 'OFF'}`;
+    });
+
+    btnWireframe.addEventListener('click', () => {
+      const isWire = !detectiveMat.wireframe;
+      detectiveMat.wireframe = isWire;
+      goldTrimMat.wireframe = isWire;
+      btnWireframe.classList.toggle('active', isWire);
+      btnWireframe.textContent = `Wireframe: ${isWire ? 'ON' : 'OFF'}`;
+    });
+
+    // Resize Handler
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // Animation Loop
+    // 6. Animation Loop
     const clock = new THREE.Clock();
 
     function animate() {
       requestAnimationFrame(animate);
-      const elapsedTime = clock.getElapsedTime();
+      const delta = clock.getDelta();
+      const elapsed = clock.getElapsedTime();
 
-      // Autonomous rotation
-      polyMesh.rotation.y = elapsedTime * 0.25;
-      polyMesh.rotation.x = elapsedTime * 0.15;
+      if (autoSpin) {
+        evidenceGroup.rotation.y += delta * 0.4;
+        ringMesh.rotation.z += delta * 0.3;
+        ring2Mesh.rotation.x -= delta * 0.25;
 
-      torusMesh.rotation.z = -elapsedTime * 0.18;
+        // อัปเดตตัวเลข Slider ตามการหมุนอัตโนมัติ
+        const currentDegY = Math.round(THREE.MathUtils.radToDeg(evidenceGroup.rotation.y) % 360);
+        labelRotY.textContent = `${currentDegY}°`;
+      }
 
-      particles.rotation.y = elapsedTime * 0.03;
+      // วัตถุลอยเบาๆ (Floating Bob)
+      evidenceGroup.position.y = Math.sin(elapsed * 1.5) * 0.15;
 
-      // Smooth mouse follow (Lerp)
-      group.rotation.y += (targetX - group.rotation.y) * 0.05;
-      group.rotation.x += (targetY - group.rotation.x) * 0.05;
+      // หมุนละอองฝุ่นในอากาศ
+      dustParticles.rotation.y = elapsed * 0.02;
 
       renderer.render(scene, camera);
     }
