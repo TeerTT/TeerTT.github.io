@@ -1,3 +1,4 @@
+[ar (1).html](https://github.com/user-attachments/files/31999044/ar.1.html)
 <!doctype html>
 <html lang="th">
 <head>
@@ -35,7 +36,7 @@ AFRAME.registerComponent('fit', {
   arjs="sourceType: webcam; debugUIEnabled: false; cameraParametersUrl: https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.8/data/data/camera_para.dat;">
 
   <a-marker preset="hiro" smooth="true">
-    <a-entity gltf-model="http://TeerTT.github.io/Cat_cup3.glb" fit></a-entity>
+    <a-entity gltf-model="https://sibsansuk.github.io/epona.glb" fit></a-entity>
   </a-marker>
 
   <a-entity camera></a-entity>
