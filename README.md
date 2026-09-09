@@ -1,2 +1,334 @@
 # TeerTT.github.io
-thanesuan Noikong 
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thanesuan Noikong (Teer) | 3D Game & Animation Portfolio</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #0b0f19;
+      color: #f3f4f6;
+      font-family: 'Kanit', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    #webgl-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 60px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .glass-card {
+      background: rgba(17, 24, 39, 0.65);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #60a5fa, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: #93c5fd;
+      font-weight: 400;
+      margin-bottom: 16px;
+    }
+
+    .badge-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .badge {
+      background: rgba(96, 165, 250, 0.12);
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      color: #bfdbfe;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.9rem;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.4rem;
+      color: #f9fafb;
+      margin-bottom: 16px;
+      border-left: 4px solid #a855f7;
+      padding-left: 12px;
+    }
+
+    .text-content {
+      color: #d1d5db;
+      line-height: 1.8;
+      font-size: 1.05rem;
+      font-weight: 300;
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .skill-pill {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+    }
+
+    .skill-pill:hover {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: rgba(168, 85, 247, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .skill-name {
+      font-weight: 500;
+      color: #f3f4f6;
+    }
+
+    .skill-type {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .interactive-hint {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  </style>
+
+  <!-- Import maps polyfill for ES Module Three.js -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="webgl-canvas"></canvas>
+
+  <main class="container">
+    <!-- Header / Intro Card -->
+    <section class="glass-card">
+      <h1 class="hero-title">Thanesuan Noikong</h1>
+      <p class="hero-subtitle">Teer • Game Developer & 3D Artist</p>
+      
+      <p class="text-content">
+        นักศึกษาชั้นปีที่ 4 คณะสถาปัตย์เทคโนโลยี สาขาเกมและอนิเมชั่น 
+        มีความรู้พื้นฐานและทักษะที่จำเป็นในการพัฒนาเกม 3D ครบวงจร ทั้งด้านการขึ้นโมเดล จัดแสง จัดการ Asset และระบบ Interactive
+      </p>
+
+      <div class="badge-bar">
+        <span class="badge">Faculty of Architecture Technology</span>
+        <span class="badge">Game & Animation</span>
+        <span class="badge">4th Year Senior</span>
+      </div>
+      <span class="interactive-hint">✦ เลื่อนเมาส์ไปมาเพื่อหมุนดูวัตถุ 3D พื้นหลัง</span>
+    </section>
+
+    <!-- Software Toolset Card -->
+    <section class="glass-card">
+      <h2 class="section-title">Software & Tools</h2>
+      <div class="skills-grid">
+        <div class="skill-pill">
+          <span class="skill-name">Unity</span>
+          <span class="skill-type">Game Engine</span>
+        </div>
+        <div class="skill-pill">
+          <span class="skill-name">Blender</span>
+          <span class="skill-type">3D Pipeline</span>
+        </div>
+        <div class="skill-pill">
+          <span class="skill-name">Autodesk Maya</span>
+          <span class="skill-type">Modeling & Rigging</span>
+        </div>
+        <div class="skill-pill">
+          <span class="skill-name">Affinity Suite</span>
+          <span class="skill-type">2D / Texturing</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import * as THREE from 'three';
+
+    const canvas = document.querySelector('#webgl-canvas');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x0b0f19, 0.04);
+
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 0, 8);
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Group for mouse interaction
+    const group = new THREE.Group();
+    scene.add(group);
+
+    // 1. Center Floating Polyhedron (Game Mesh representation)
+    const polyGeo = new THREE.IcosahedronGeometry(1.8, 0);
+    const polyMat = new THREE.MeshStandardMaterial({
+      color: 0x60a5fa,
+      metalness: 0.7,
+      roughness: 0.2,
+      wireframe: false,
+    });
+    const polyMesh = new THREE.Mesh(polyGeo, polyMat);
+    group.add(polyMesh);
+
+    // 2. Wireframe Overlay
+    const wireMat = new THREE.MeshBasicMaterial({
+      color: 0xc084fc,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.4
+    });
+    const wireMesh = new THREE.Mesh(polyGeo, wireMat);
+    wireMesh.scale.setScalar(1.02);
+    polyMesh.add(wireMesh);
+
+    // 3. Floating Orbit Ring
+    const torusGeo = new THREE.TorusGeometry(3.0, 0.04, 16, 100);
+    const torusMat = new THREE.MeshStandardMaterial({
+      color: 0xa855f7,
+      emissive: 0x581c87,
+      roughness: 0.3
+    });
+    const torusMesh = new THREE.Mesh(torusGeo, torusMat);
+    torusMesh.rotation.x = Math.PI / 3;
+    group.add(torusMesh);
+
+    // 4. Background Dust Particles
+    const particleCount = 200;
+    const particleGeo = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+
+    for (let i = 0; i < particleCount * 3; i += 3) {
+      positions[i] = (Math.random() - 0.5) * 20;
+      positions[i + 1] = (Math.random() - 0.5) * 20;
+      positions[i + 2] = (Math.random() - 0.5) * 15;
+    }
+
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const particleMat = new THREE.PointsMaterial({
+      size: 0.05,
+      color: 0x93c5fd,
+      transparent: true,
+      opacity: 0.6
+    });
+    const particles = new THREE.Points(particleGeo, particleMat);
+    scene.add(particles);
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+
+    const blueLight = new THREE.PointLight(0x38bdf8, 30, 20);
+    blueLight.position.set(4, 4, 4);
+    scene.add(blueLight);
+
+    const purpleLight = new THREE.PointLight(0xa855f7, 30, 20);
+    purpleLight.position.set(-4, -3, 3);
+    scene.add(purpleLight);
+
+    // Mouse Tracking
+    let targetX = 0;
+    let targetY = 0;
+    const windowHalfX = window.innerWidth / 2;
+    const windowHalfY = window.innerHeight / 2;
+
+    window.addEventListener('mousemove', (e) => {
+      targetX = (e.clientX - windowHalfX) * 0.0008;
+      targetY = (e.clientY - windowHalfY) * 0.0008;
+    });
+
+    // Handle Resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Animation Loop
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const elapsedTime = clock.getElapsedTime();
+
+      // Autonomous rotation
+      polyMesh.rotation.y = elapsedTime * 0.25;
+      polyMesh.rotation.x = elapsedTime * 0.15;
+
+      torusMesh.rotation.z = -elapsedTime * 0.18;
+
+      particles.rotation.y = elapsedTime * 0.03;
+
+      // Smooth mouse follow (Lerp)
+      group.rotation.y += (targetX - group.rotation.y) * 0.05;
+      group.rotation.x += (targetY - group.rotation.x) * 0.05;
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
