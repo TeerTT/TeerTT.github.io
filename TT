@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Epona AR</title>
+<style>body { margin: 0; overflow: hidden; }</style>
+
+<script src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-master.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.8/aframe/build/aframe-ar.js"></script>
+
+<script>
+AFRAME.registerComponent('fit', {
+  init() {
+    this.el.addEventListener('model-loaded', e => {
+      console.log('✅ โมเดลโหลดสำเร็จ!');
+      const model = e.detail.model, THREE = AFRAME.THREE;
+      const box = new THREE.Box3().setFromObject(model);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      
+      model.position.set(-center.x, -box.min.y, -center.z);
+      
+      const maxAxis = Math.max(size.x, size.y, size.z);
+      if (maxAxis > 0) {
+        this.el.object3D.scale.setScalar(1.5 / maxAxis);
+      }
+
+      if (model.animations && model.animations.length) {
+        this.mixer = new THREE.AnimationMixer(model);
+        this.mixer.clipAction(model.animations[0]).play();
+      }
+    });
+  },
+  tick(time, dt) { 
+    if (this.mixer) this.mixer.update(dt / 1000); 
+  }
+});
+</script>
+</head>
+
+<body>
+<a-scene embedded vr-mode-ui="enabled: false" loading-screen="enabled: false"
+  arjs="sourceType: webcam; debugUIEnabled: false;">
+
+  <a-entity light="type: ambient; color: #ffffff; intensity: 1.5;"></a-entity>
+  <a-entity light="type: directional; color: #ffffff; intensity: 1.0;" position="1 2 1"></a-entity>
+
+  <a-marker preset="hiro">
+    <!-- ชี้หา TT.glb ใน repo เดียวกันโดยตรง -->
+    <a-entity gltf-model="./TT.glb" fit></a-entity>
+  </a-marker>
+
+  <a-entity camera></a-entity>
+</a-scene>
+</body>
+</html>
