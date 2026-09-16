@@ -8,12 +8,12 @@
 
 <body>
 <a-scene
-  mindar-image="imageTargetSrc: https://TeerTT.github.io/targetsC.mind.mind;"
+  mindar-image="imageTargetSrc: https://TeerTT.github.io/targetsC.mind;"
   vr-mode-ui="enabled: false"
   device-orientation-permission-ui="enabled: false">
 
   <a-assets>
-    <a-asset-item id="model0" src="https://http://Teertt.github.io/Cat_cuT
+    <a-asset-item id="model0" src="https://http://Teertt.github.io/Cat_cuT.glb"></a-asset-item>
   </a-assets>
 
   <!-- Target 1 -->
