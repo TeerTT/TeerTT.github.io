@@ -13,7 +13,7 @@
   device-orientation-permission-ui="enabled: false">
 
   <a-assets>
-    <a-asset-item id="model0" src="https://http://Teertt.github.io/Cat_cuT.glb"></a-asset-item>
+    <a-asset-item id="model0" src="https://Teertt.github.io/Cat_cuT.glb"></a-asset-item>
   </a-assets>
 
   <!-- Target 1 -->
