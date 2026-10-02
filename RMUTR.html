@@ -4,6 +4,50 @@
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script>
+
+  <!-- ระบบตรวจจับการแสดงโมเดลเพื่อควบคุมเสียง -->
+  <script>
+    AFRAME.registerComponent('play-sound-on-target', {
+      init: function () {
+        const audio = document.querySelector('#voice-sound');
+        const target = this.el;
+        let isModelShowing = false;
+
+        // ปลดล็อกระบบเสียงของเบราว์เซอร์อัตโนมัติในพื้นหลังเมื่อแตะจอ
+        const unlock = () => {
+          if (audio) {
+            audio.play().then(() => {
+              if (!isModelShowing) {
+                audio.pause();
+                audio.currentTime = 0;
+              }
+            }).catch(() => {});
+          }
+          window.removeEventListener('touchstart', unlock);
+          window.removeEventListener('click', unlock);
+        };
+        window.addEventListener('touchstart', unlock, { once: true });
+        window.addEventListener('click', unlock, { once: true });
+
+        // เล่นเสียงวนลูปทันทีที่ส่องเจอโมเดล
+        target.addEventListener('targetFound', () => {
+          isModelShowing = true;
+          if (audio) {
+            audio.currentTime = 0;
+            audio.play().catch(e => console.log('Wait for interaction:', e));
+          }
+        });
+
+        // หยุดเสียงทันทีที่ภาพหลุดโฟกัส
+        target.addEventListener('targetLost', () => {
+          isModelShowing = false;
+          if (audio) {
+            audio.pause();
+          }
+        });
+      }
+    });
+  </script>
 </head>
 
 <body>
@@ -15,14 +59,17 @@
   device-orientation-permission-ui="enabled: false">
 
   <a-assets>
-    <a-asset-item id="model0" src="https://TeerTT.github.io/ProM.glb"></a-asset-item>
+    <a-asset-item id="model0" src="https://TeerTT.github.io/ProMS.glb"></a-asset-item>
     <!--<a-asset-item id="model1" src="https://TeerTT.github.io/ProM.glb"></a-asset-item>
     <a-asset-item id="model2" src="https://TeerTT.github.io/ProM.glb"></a-asset-item>-->
+
+    <!-- โหลดไฟล์เสียงของคุณพร้อมตั้งค่าวนลูป (loop) -->
+    <audio id="voice-sound" src="https://TeerTT.github.io/AudioAr.mp3" preload="auto" loop></audio>
   </a-assets>
 
   <!-- Target 1 -->
-  <a-entity mindar-image-target="targetIndex: 0">
-    <a-gltf-model src="#model0" animation-mixer rotation="0 0 0" scale="0.03 0.03 0.03"></a-gltf-model>
+  <a-entity mindar-image-target="targetIndex: 0" play-sound-on-target>
+    <a-gltf-model src="#model0" animation-mixer scale="0.03 0.03 0.03"></a-gltf-model>
   </a-entity>
 
   <!-- Target 2 -->
